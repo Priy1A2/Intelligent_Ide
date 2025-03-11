@@ -1,0 +1,276 @@
+:root {
+    --bg-color: #1e1e1e;
+    --sidebar-bg: #252526;
+    --editor-bg: #1e1e1e;
+    --terminal-bg: #1e1e1e;
+    --header-bg: #3c3c3c;
+    --tab-bg: #2d2d2d;
+    --tab-active-bg: #1e1e1e;
+    --status-bar-bg: #007acc;
+    --text-color: #d4d4d4;
+    --text-muted: #858585;
+    --border-color: #474747;
+    --button-primary: #0e639c;
+    --button-primary-hover: #1177bb;
+    --button-secondary: #3a3d41;
+    --button-secondary-hover: #45494e;
+    --scrollbar-thumb: #424242;
+    --scrollbar-track: #1e1e1e;
+}
+
+html, body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.ide-container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+}
+
+header {
+    background: linear-gradient(90deg, var(--header-bg), #2a2d2e);
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+h2 i {
+    color: var(--status-bar-bg);
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.editor-container {
+    min-height: 50vh;
+    max-height: 70vh;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--editor-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.editor-header {
+    display: flex;
+    background: var(--sidebar-bg);
+    padding: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-tab {
+    background: var(--tab-bg);
+    padding: 0.5rem 1rem;
+    border-right: 1px solid var(--border-color);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.file-tab.active {
+    background: var(--tab-active-bg);
+    border-bottom: 2px solid var(--status-bar-bg);
+}
+
+.editor-actions .fix-bugs-btn{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 5px;
+    background: var(--button-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+#codeForm {
+    width: 50%;
+}
+.CodeMirror {
+    height: 100% !important;
+    font-size: 14px;
+    line-height: 1.5;
+    background: var(--editor-bg);
+    color: var(--text-color);
+}
+
+.CodeMirror-gutters {
+    background: var(--editor-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.CodeMirror-linenumber {
+    color: var(--text-muted);
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid #80a4c2;
+}
+
+.CodeMirror-selected {
+    background: rgba(197, 124, 124, 0.1);
+}
+
+.CodeMirror-activeline-background {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* Output Area */
+.output-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--terminal-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.output-header {
+    background: var(--header-bg);
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#output {
+    flex: 1;
+    padding: 0.5rem;
+    overflow-y: auto;
+    font-size: 14px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+button {
+    margin-top: 10px;
+    background: var(--button-primary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    background: var(--button-primary-hover);
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+    transform: scale(1.02);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:focus {
+    outline: 2px solid var(--button-primary-hover);
+    outline-offset: 2px;
+}
+
+
+#helpBtn {
+    background: var(--button-secondary);
+}
+
+#helpBtn:hover {
+    background: var(--button-secondary-hover);
+}
+
+footer {
+    background: var(--status-bar-bg);
+    color: #fff;
+    padding: 0.3rem 1rem;
+}
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.editor-container, .output-container {
+    animation: fade-in 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+    .editor-container {
+        width: 100%;
+    }
+    .output-container {
+        width: 100%;
+    }
+    #codeForm {
+        width: 100%;
+    }
+}

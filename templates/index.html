@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent IDE</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- CodeMirror CSS & JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/hint/python-hint.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/hint/show-hint.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/theme/material-darker.min.css">
+
+    <!-- Additional CodeMirror addons for better experience -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/addon/selection/active-line.min.js"></script>
+    <script>
+        async function runCode() {
+            // const code = document.getElementById('codeEditor').value;
+            const code = editor.getValue(); // Correct way to get CodeMirror content
+        console.log('Code being sent:', code);
+
+            try {
+                const response = await fetch('/api/run-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                const result = await response.json();
+                document.getElementById('output').innerText = result.output;
+            } catch (error) {
+                console.error('Error running code:', error);
+                document.getElementById('output').innerText = 'Failed to run code';
+            }
+        }
+    </script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="static/styles.css">
+    <style>
+        .ide-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-container,
+        .output-container {
+            width: 50vw;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .CodeMirror {
+            height: calc(100% - 50px);
+            overflow-y: auto;
+        }
+
+        .output-container {
+            border-left: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: calc(100% - 30px);
+        }
+
+        .editor-header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            background-color: #222;
+            color: white;
+        }
+    </style>
+
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<body>
+    <div class="ide-container">
+        <header>
+            <h2><i class="fas fa-code"></i> Welcome to Intelligent IDE!</h2>
+        </header>
+
+        <main>
+            <form id="codeForm">
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <span class="file-tab active"><i class="fas fa-file-code"></i> main.py</span>
+                        <div class="editor-actions">
+                            <span class="language-indicator">Python</span>
+                            <button type="button" id="fixBugsBtn"><i class="fas fa-bug"></i> Fix Bugs</button>
+                            <!-- <button class="button"><i class="fas fa-bug"></i> Fix Bugs</button> -->
+                            <!-- <button class="fix-bugs-btn" onclick="fixBugs()"><i class="fas fa-wrench"></i> Fix Bugs</button> -->
+                        </div>
+                    </div>
+                    <textarea id="codeEditor" name="prompt"></textarea>
+                </div>
+                <!-- 🔹 FILE UPLOAD FEATURE -->
+                <div class="upload-container">
+                    <input type="file" id="codeFile" accept=".py,.java,.cpp">
+                    <button type="button" onclick="uploadCode()"><i class="fas fa-upload"></i> Upload Code</button>
+                </div>
+                <div class="button-container">
+                    <input type="file" id="fileInput" accept=".py" style="display: none;">
+                    <button type="button" id="uploadBtn"><i class="fas fa-upload"></i> Upload File</button>
+                    <button type="submit"><i class="fas fa-play"></i> Generate Code</button>
+                    <button type="button" id="runCodeBtn" onclick="runCode()"><i class="fas fa-play-circle"></i> Run Code</button>
+                    <button type="button" id="helpBtn"><i class="fas fa-question-circle"></i> Need Help?</button>
+                </div>
+            </form>
+
+            <div class="output-container">
+                <h3>Response:</h3>
+                <div class="output-header">
+                    <span>Console Output</span>
+                </div>
+                <div id="output">
+                    <pre id="output"><code>Ready to generate code...</code></pre>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="status-bar">
+                <div class="status-items">
+                    <span><i class="fas fa-code-branch"></i> main</span>
+                    <span><i class="fas fa-check-circle"></i> Ready</span>
+                </div>
+                <div class="status-items right">
+                    <span>Python</span>
+                    <span>Ln 1, Col 1</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let editor;
+        $(document).ready(function () {
+            let autocompleteTimeout;
+            // Initialize CodeMirror for better coding experience
+            editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+                mode: "python",
+                theme: "material-darker",  // Dark theme for code editor
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                styleActiveLine: true,     // Highlight active line
+                tabSize: 4,
+                indentUnit: 4,
+                indentWithTabs: false,
+                extraKeys: { "Ctrl-Space": "autocomplete" } // Enable autocomplete
+            });
+
+            editor.on("inputRead", function (editor, event) {
+            clearTimeout(autocompleteTimeout);
+            autocompleteTimeout = setTimeout(function () {
+                var cursor = editor.getCursor();
+                var code = editor.getValue();
+                $.ajax({
+                    url: "/autocomplete",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ code: code, line: cursor.line + 1, col: cursor.ch }),
+                    success: function (data) {
+                        editor.showHint({
+                            hint: function () {
+                                return { list: data, from: cursor, to: cursor };
+                            },
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.status, xhr.responseText);
+                        $("#output").html("<pre><code>Error: " + (xhr.responseText || "Server Connection Failed.") + "</code></pre>");
+                    }
+                });
+            }, 300); // Debounce to prevent excessive requests
+        });
+
+            // Set initial content for demo purposes
+            editor.setValue("# Write your Python code here\n\ndef hello_world():\n    print(\"Hello, World!\")\n\n# Call the function\nhello_world()");
+
+            // Update line and column numbers as cursor moves
+            editor.on('cursorActivity', function () {
+                var cursor = editor.getCursor();
+                $('.status-items.right span:last-child').text('Ln ' + (cursor.line + 1) + ', Col ' + (cursor.ch + 1));
+            });
+
+            // Function to read file and update CodeMirror editor
+            function readFileAndUpdateEditor(file) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                editor.setValue(event.target.result);
+            };
+            reader.onerror = function () {
+                alert("Error reading file. Please try again.");
+            };
+            reader.readAsText(file);
+        }
+
+            // Trigger file input when upload button is clicked
+            $("#uploadBtn").click(function () {
+                $("#fileInput").click();
+            });
+
+            // Handle file selection
+            $("#fileInput").change(function (event) {
+                var file = event.target.files[0];
+                if (file) {
+                    if (file.name.endsWith(".py")) {
+                        readFileAndUpdateEditor(file);
+                    } else {
+                        alert("Please upload a valid Python (.py) file.");
+                    }
+                }
+            })
+
+            function uploadCode() {
+                var fileInput = document.getElementById("codeFile");
+                if (fileInput.files.length === 0) {
+                    alert("No file selected!");
+                    return;
+                }
+                var file = fileInput.files[0];
+                if (file.name.endsWith(".py")) {
+                    readFileAndUpdateEditor(file);
+                } else {
+                    alert("Please upload a valid Python (.py) file.");
+                }
+            }
+
+            // Fix: Attach uploadCode function to the Upload Code button
+            //1
+            // document.querySelector("button[onclick='uploadCode()']").addEventListener("click", uploadCode);
+            //2
+            $(document).on("click", "button[onclick='uploadCode()']", uploadCode);
+
+            // Dynamically adjust button size when tab size changes
+            function adjustButtonSize() {
+                var tabSize = editor.getOption("tabSize");
+                $("#fixBugsBtn").css({
+                    "font-size": `${tabSize * 2}px`,
+                    "padding": `${tabSize}px ${tabSize * 2}px`
+                });
+            }
+
+            editor.on("change", adjustButtonSize);
+            adjustButtonSize(); // Initial adjustment
+
+            // Function to send code for bug fixing
+            function fixBugs() {
+                var code = editor.getValue(); // Get code from CodeMirror editor
+
+                // Disable button and show loading text
+                $("#fixBugsBtn").html('<i class="fas fa-spinner fa-spin"></i> Fixing...').prop("disabled", true);
+
+
+                $.ajax({
+                    url: "/fix_bug",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ code: code }),
+                    success: function (data) {
+                        console.log("API Response:", data);
+
+                        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+                            let errorMessages = data.errors.map(e => `Error: ${e.error} at line ${e.line}`).join("\n");
+                            $("#output").html("<pre><code>" + errorMessages + "</code></pre>");
+                        } else if (data.fixed_code) {
+                            editor.setValue(data.fixed_code);
+                            $("#output").html("<pre><code>Bugs fixed successfully.</code></pre>");
+                        } else {
+                            $("#output").html("<pre><code>No errors found or incorrect API response.</code></pre>");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        $("#output").html("<pre><code>Error: Could not connect to the server. " + xhr.responseText + "</code></pre>");
+                    },
+                    complete: function () {
+                        $("#fixBugsBtn").html('<i class="fas fa-bug"></i> Fix Bugs').prop("disabled", false);
+                    }
+                });
+            }
+
+            $("#fixBugsBtn").click(function () { // Corrected: Using an anonymous function
+                fixBugs();
+            });
+
+            $("#codeForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var prompt = editor.getValue();  // Get CodeMirror text
+                var generateButton = $("button[type='submit']");
+
+                generateButton.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Generating...'); // Disable button
+
+                $.post("/generate_code", { code_prompt: prompt }, function (data) {
+                    if (data.response) {
+                        $("#output").html("<pre><code>" + data.response + "</code></pre>");
+                    } else {
+                        $("#output").html("<pre><code>Error: No response received.</code></pre>");
+                    }
+                }).fail(function () {
+                    $("#output").html("<pre><code>Error: Could not connect to the server.</code></pre>");
+                }).always(function () {
+                    generateButton.prop("disabled", false).html('<i class="fas fa-play"></i> Generate Code'); // Re-enable button
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
